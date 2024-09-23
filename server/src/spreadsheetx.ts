@@ -13,7 +13,8 @@ export class SpreadSheetx {
     this.ss = null
     let xstr = "";
     let xstr2 = "";
-    if (ss_id != "") {
+    Util.log(`##################### SpreadSheetx constructor A ss_id=${ss_id}`)
+    if ( typeof ss_id === "string" && ss_id.replace(/^\s+$/, '').length > 0) { 
       this.ss = SpreadsheetApp.openById(ss_id); //IDから取得
       if (typeof (this.ss) === "string") {
         xstr = "null";
@@ -21,6 +22,7 @@ export class SpreadSheetx {
       else {
         xstr = "valid";
       }
+      
       if (typeof (this.ss_id) === "string") {
         xstr2 = this.ss_id;
       }
@@ -55,17 +57,24 @@ export class SpreadSheetx {
     }
   }
   getSheet(sheet_name: string): SSheet {
+    Logger.log(`SpreadSheetx getSheet 1 sheet_name=${sheet_name}`);
     let s_sheet = this.s_sheet_assoc[sheet_name]
     let xstr = "";
     if (s_sheet === undefined) {
-      if (this.ss != null) {
+      Logger.log(`SpreadSheetx getSheet 2 sheet_name=${sheet_name}`);
+      if (this.ss !== null) {
+        Logger.log(`SpreadSheetx getSheet 0 1 this.ss=${this.ss}|sheet_name=${sheet_name}`);
         const sheet = this.ss.getSheetByName(sheet_name);
+        Logger.log(`SpreadSheetx getSheet 0 2 sheet=${sheet}`);
+        if( sheet === null ){
+          throw new Error("sheet is null");
+        }
+        Logger.log(`SpreadSheetx getSheet 0 3 sheet=${sheet}|sheet_name=${sheet_name}`);
         s_sheet = new SSheet(sheet, sheet_name);
-        Util.log(`SpreadSheetx getSheet 0 sheet_name=${sheet_name}`);
         xstr = this.ss_id == null ? "" : this.ss_id;
-        Util.log(`SpreadSheetx getSheet 0 this.ss_id=${xstr}`);
+        Util.log(`SpreadSheetx getSheet 0 4 this.ss_id=${xstr}`);
         xstr = this.ss_url == null ? "" : this.ss_url;
-        Util.log(`SpreadSheetx getSheet 0 this.ss_url=${xstr}`);
+        Util.log(`SpreadSheetx getSheet 0 5 this.ss_url=${xstr}`);
         this.s_sheet_assoc[sheet_name] = s_sheet;
       }
       else {

@@ -1,32 +1,23 @@
 export class Appenv {
-  // index_ss_id: string
-  // index_sheet_name: string
-  // ss_id: string
-  // sheet_name: string
+  static index_ss_id: string = '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI'
+  static index_sheet_name: string = "Sheet1";
+  static ss_id: string = '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
+  static sheet_name: string = "Sheet1";
 
-  /*
-  constructor(){
-    this.ss_id = '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI';
-    this.sheet_name = "Sheet1";
-    this.index_ss_id = '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
-    this.index_sheet_name = "Sheet1";
+  static get_ss_id():string {
+    // return Appenv.ss_id;
+    return '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI'
   }
-  */
-
-  get_ss_id():string {
-    return  '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI';
-    // return this.ss_id;
-  }
-  get_sheet_name():string {
+  static get_sheet_name():string {
+    // return Appenv.sheet_name;
     return "Sheet1";
-    // return this.sheet_name;
   }
-  get_index_ss_id():string {
-    return  '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
-    // return this.index_ss_id;
+  static get_index_ss_id():string {
+    // return Appenv.index_ss_id;
+    return '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
   }
-  get_index_sheet_name():string {
+  static get_index_sheet_name():string {
+    // return Appenv.index_sheet_name;
     return "Sheet1";
-    // return this.index_sheet_name;
   }
 }

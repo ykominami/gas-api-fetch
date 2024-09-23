@@ -1,15 +1,10 @@
 import { Inquiry } from './inquiry';
 import { Listx } from './listx';
-import { Appenv } from './appenv';
-import { Infox } from './infox';
 
 export class Webapp {
-  appenv: Appenv;
-  constructor(){
-    this.appenv = new Appenv();
-  }
-  listx_test():void {
-    Listx.listx_main(this.appenv)
+
+  listx_test(): GASHtmlTextOutputType {
+    return Listx.listx_main()
   }
   do0(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): GASHtmlTextOutputType {
     //値の受け取り
@@ -17,11 +12,11 @@ export class Webapp {
     const cmd:string = e.parameter.cmd ? e.parameter.cmd : "";
     switch(cmd){
       case "inquiry":
-        const inquiry = new Inquiry(e, this.appenv);
+        const inquiry = new Inquiry(e);
         content = inquiry.register();
         break;
       case "listx":
-        content = Listx.listx_main(this.appenv)
+        content = Listx.listx_main()
        break;
       default:
         content = ContentService.createTextOutput(`cmd=default cmd=${cmd}`)

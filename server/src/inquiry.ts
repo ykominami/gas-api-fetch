@@ -1,7 +1,6 @@
 import  { Appenv } from './appenv';
 
 export class Inquiry {
-  appenv: Appenv;
   name:string;
   email:string;
   inquiry:string;
@@ -11,16 +10,15 @@ export class Inquiry {
   ss_id: string;
   sheet_name: string;
 
-  constructor(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent, appenv: Appenv){
-    this.appenv = appenv;
+  constructor(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent){
     this.name = e.parameter.name ? e.parameter.name : "";
     this.email = e.parameter.email ? e.parameter.email : "";
     this.inquiry = e.parameter.inquiry ? e.parameter.inquiry : "";
     //エラー制御
     this.email_exp = /^[a-z0-9.]+@[a-z0-9.]+\.[a-z]+$/
     this.inquiry_exp = /^.{1,10}$/;
-    this.ss_id = this.appenv.get_ss_id();
-    this.sheet_name = this.appenv.get_sheet_name();
+    this.ss_id = Appenv.get_ss_id();
+    this.sheet_name = Appenv.get_sheet_name();
     this.sheet = null;
   }
   validate():string {

@@ -58,35 +58,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Appenv: () => (/* binding */ Appenv)
 /* harmony export */ });
 class Appenv {
-    // index_ss_id: string
-    // index_sheet_name: string
-    // ss_id: string
-    // sheet_name: string
-    /*
-    constructor(){
-      this.ss_id = '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI';
-      this.sheet_name = "Sheet1";
-      this.index_ss_id = '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
-      this.index_sheet_name = "Sheet1";
-    }
-    */
-    get_ss_id() {
+    static get_ss_id() {
+        // return Appenv.ss_id;
         return '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI';
-        // return this.ss_id;
     }
-    get_sheet_name() {
+    static get_sheet_name() {
+        // return Appenv.sheet_name;
         return "Sheet1";
-        // return this.sheet_name;
     }
-    get_index_ss_id() {
+    static get_index_ss_id() {
+        // return Appenv.index_ss_id;
         return '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
-        // return this.index_ss_id;
     }
-    get_index_sheet_name() {
+    static get_index_sheet_name() {
+        // return Appenv.index_sheet_name;
         return "Sheet1";
-        // return this.index_sheet_name;
     }
 }
+Appenv.index_ss_id = '1TWZMVySbWnuOyWpOtNG4N08QNA_jNNlMsLPCkPV9fyI';
+Appenv.index_sheet_name = "Sheet1";
+Appenv.ss_id = '1upauHI2N5cwrAEMzvG9UuC7dGLekuSkT-Y5uiKit9Bo';
+Appenv.sheet_name = "Sheet1";
 
 
 /***/ }),
@@ -113,28 +105,37 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Infox {
-    CONST_SS_ID;
-    sheet_name;
-    ssxx;
-    ssheet;
-    values;
     constructor(ss_id, sheet_name) {
+        if (!_util__WEBPACK_IMPORTED_MODULE_1__.Util.is_valid_string(ss_id)) {
+            throw new Error("Infox ss_id is invalide");
+        }
+        if (!_util__WEBPACK_IMPORTED_MODULE_1__.Util.is_valid_string(sheet_name)) {
+            throw new Error("Infox sheet_name is invalide");
+        }
         // this.CONST_SS_ID = "1KtGdnnpj8k_bkxfYITalK193nRlVXiN0o_YiASO5KNs";
         this.CONST_SS_ID = ss_id;
         this.sheet_name = sheet_name;
+        this.ssheet = null;
+        this.values = [[""]];
+        if (!_util__WEBPACK_IMPORTED_MODULE_1__.Util.is_valid_string(this.CONST_SS_ID) || !_util__WEBPACK_IMPORTED_MODULE_1__.Util.is_valid_string(this.sheet_name)) {
+            throw new Error("Infox this.CONST_SS_ID is invalide");
+        }
         this.ssxx = new _spreadsheetx__WEBPACK_IMPORTED_MODULE_0__.SpreadSheetx(this.CONST_SS_ID);
-        this.ssheet = this.ssxx.getSheet(this.sheet_name);
-        this.ssheet.fetchAndSetDataRange();
-        this.values = this.ssheet.getValues();
+        if (this.ssxx !== null) {
+            this.ssheet = this.ssxx.getSheet(this.sheet_name);
+            if (this.ssheet !== null) {
+                this.ssheet.fetchAndSetDataRange();
+                this.values = this.ssheet.getValues();
+            }
+        }
     }
     getValues() {
         // Util.log(`Infox getValues() 1`)
         if (this.values.length > 0) {
-            // Util.log(`Infox getValues() 2`)
             if (this.values[0].length == 0) {
-                // Util.log(`Infox getValues() 3`)
-                // this.values = this.ssheet.getValues() as string[][];
-                this.values = this.ssheet.getValues(); // as string[][];
+                if (this.ssheet !== null) {
+                    this.values = this.ssheet.getValues(); // as string[][];
+                }
             }
         }
         return this.values;
@@ -145,8 +146,6 @@ class Infox {
         const kind = infoparam.kind;
         const kind2 = infoparam.kind2;
         const item = this.make_item(year, kind, kind2);
-        // Util.log(`Infox getSSId item=${item}`)
-        // const [ss_id, sheet_name] = this.get_id_from_values(values, item);
         return this.get_id_from_values(values, item);
     }
     make_item(year_str = null, kind_str = null, kind2_str = null) {
@@ -227,26 +226,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Inquiry: () => (/* binding */ Inquiry)
 /* harmony export */ });
+/* harmony import */ var _appenv__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./appenv */ "./server/src/appenv.ts");
+
 class Inquiry {
-    appenv;
-    name;
-    email;
-    inquiry;
-    email_exp;
-    inquiry_exp;
-    sheet;
-    ss_id;
-    sheet_name;
-    constructor(e, appenv) {
-        this.appenv = appenv;
+    constructor(e) {
         this.name = e.parameter.name ? e.parameter.name : "";
         this.email = e.parameter.email ? e.parameter.email : "";
         this.inquiry = e.parameter.inquiry ? e.parameter.inquiry : "";
         //エラー制御
         this.email_exp = /^[a-z0-9.]+@[a-z0-9.]+\.[a-z]+$/;
         this.inquiry_exp = /^.{1,10}$/;
-        this.ss_id = this.appenv.get_ss_id();
-        this.sheet_name = this.appenv.get_sheet_name();
+        this.ss_id = _appenv__WEBPACK_IMPORTED_MODULE_0__.Appenv.get_ss_id();
+        this.sheet_name = _appenv__WEBPACK_IMPORTED_MODULE_0__.Appenv.get_sheet_name();
         this.sheet = null;
     }
     validate() {
@@ -301,8 +292,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Itemvalue: () => (/* binding */ Itemvalue)
 /* harmony export */ });
 class Itemvalue {
-    index;
-    value;
     constructor(options) {
         this.index = options.index;
         this.value = options.value;
@@ -323,8 +312,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Itemx: () => (/* binding */ Itemx)
 /* harmony export */ });
 class Itemx {
-    index;
-    name;
     constructor(options) {
         this.index = options.index;
         this.name = options.name;
@@ -348,53 +335,117 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _infox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./infox */ "./server/src/infox.ts");
 /* harmony import */ var _spreadsheetx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./spreadsheetx */ "./server/src/spreadsheetx.ts");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./server/src/util.ts");
+/* harmony import */ var _appenv__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appenv */ "./server/src/appenv.ts");
+
 
 
 
 class Listx {
-    infox;
-    param;
-    ss_id;
-    sheet_name;
-    ss;
-    s_sheet;
-    values;
-    error;
-    static listx_main(appenv) {
-        // this.appenv = appenv
-        const ss_id = appenv.get_index_ss_id();
-        const sheet_name = appenv.get_index_sheet_name();
+    static valid_ss_id_and_sheet_name(ss_id, sheet_name) {
+        if (!_util__WEBPACK_IMPORTED_MODULE_2__.Util.is_valid_string(ss_id)) {
+            return "listx_sub ss_id is null";
+        }
+        if (!_util__WEBPACK_IMPORTED_MODULE_2__.Util.is_valid_string(sheet_name)) {
+            return "sheet_name is null";
+        }
+        return "";
+    }
+    static listx_sub(ss_id, sheet_name) {
         const infox = new _infox__WEBPACK_IMPORTED_MODULE_0__.Infox(ss_id, sheet_name);
+        if (infox === null) {
+            return { error_message: "infox is null", listx: null };
+        }
         const listx = new Listx(infox);
-        const array = listx.getValues();
-        Logger.log(`listx_main array=${JSON.stringify(array)}`);
-        const text = listx.getAsJson();
+        if (listx === null) {
+            return { error_message: "listx is null", listx: null };
+        }
+        return { error_message: "", listx: listx };
+    }
+    static listx_ss(ss_id, sheet_name) {
+        let text = "";
+        let str = Listx.valid_ss_id_and_sheet_name(ss_id, sheet_name);
+        if (str === "") {
+            const obj = Listx.listx_sub(ss_id, sheet_name);
+            if (obj.error_message === "") {
+                const listx = obj.listx;
+                if (listx !== null) {
+                    const array2 = listx.getValues();
+                    text = JSON.stringify(array2);
+                    _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(text);
+                }
+            }
+        }
+        return text;
+    }
+    static listx_func(array, num) {
+        const ss_id = array[num][2];
+        const sheet_name = array[num][4];
+        _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`listx_func ss_id=${ss_id} sheet_name=${sheet_name}`);
+        return Listx.listx_ss(ss_id, sheet_name);
+    }
+    static listx_main() {
+        // this.appenv = appenv
+        const ss_id = _appenv__WEBPACK_IMPORTED_MODULE_3__.Appenv.get_index_ss_id();
+        const sheet_name = _appenv__WEBPACK_IMPORTED_MODULE_3__.Appenv.get_index_sheet_name();
+        _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`listx_main ss_id=${ss_id} sheet_name=${sheet_name}`);
+        let text = "";
+        let str = Listx.valid_ss_id_and_sheet_name(ss_id, sheet_name);
+        if (str === "") {
+            const obj = Listx.listx_sub(ss_id, sheet_name);
+            if (obj.error_message === "") {
+                const listx = obj.listx;
+                if (listx !== null) {
+                    const array = listx.getValues();
+                    // Listx.listx_func(array, 1)
+                    array.forEach((item, index) => {
+                        _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`listx_main ${index} 0=${item[0]} 1=${item[1]}`);
+                    });
+                    text = "listx_main";
+                }
+            }
+            else {
+                text = obj.error_message;
+            }
+        }
+        else {
+            text = str;
+        }
+        _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`listx_main text=${text}`);
         return ContentService.createTextOutput("cmd=listx|" + text);
     }
     constructor(infox) {
         this.infox = infox;
         this.param = null;
-        this.ss_id = "";
+        this.ss_id = infox.CONST_SS_ID;
         this.ss = null;
         this.s_sheet = null;
-        this.sheet_name = "";
+        this.sheet_name = infox.sheet_name;
         this.values = [["BookInfo"]];
         this.error = { history: ["Booklist-A-1 init"] };
     }
     getValues() {
+        if (!_util__WEBPACK_IMPORTED_MODULE_2__.Util.is_valid_string(this.ss_id)) {
+            _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`Listx getValues this.ss_id=${this.ss_id}|`);
+            throw new Error(`Listx getValues ss_id=${this.ss_id}`);
+        }
+        if (!_util__WEBPACK_IMPORTED_MODULE_2__.Util.is_valid_string(this.sheet_name)) {
+            _util__WEBPACK_IMPORTED_MODULE_2__.Util.log(`Listx getValues this.sheet_name=${this.sheet_name}|`);
+            throw new Error(`Listx getValues this.sheet_name=${this.sheet_name}`);
+        }
         this.ss = new _spreadsheetx__WEBPACK_IMPORTED_MODULE_1__.SpreadSheetx(this.ss_id);
         this.s_sheet = this.ss.getSheet(this.sheet_name);
+        if (this.s_sheet === null || typeof this.s_sheet === "undefined") {
+            this.error.history.push("Booklist-A-2 get_values this.s_sheet is null or undefined");
+            return [this.error.history];
+        }
         this.s_sheet.fetchAndSetDataRange();
         this.values = this.s_sheet.getValues(); //  as string[][]
         if (this.values.length <= 1) {
-            // Util.log(`Booklist B-1`)
             this.error.history.push(`Booklist-A-4 get_values this.values.length=${this.values.length}`);
             return [this.error.history];
         }
         else {
-            // Util.log(`Booklist B-2 get_values this.values.length=${this.values.length}`)
             return this.values;
-            // return [ this.error.history ]
         }
     }
     getAsJson() {
@@ -428,8 +479,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SearchItem: () => (/* binding */ SearchItem)
 /* harmony export */ });
 class SearchItem {
-    searches;
-    value;
     constructor(options) {
         this.searches = options.searches;
         this.value = options.value;
@@ -455,17 +504,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class SpreadSheetx {
-    ss_id;
-    ss_url;
-    ss;
-    s_sheet_assoc;
     constructor(ss_id) {
         this.ss_id = ss_id;
         this.ss_url = "";
         this.ss = null;
         let xstr = "";
         let xstr2 = "";
-        if (ss_id != "") {
+        _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`##################### SpreadSheetx constructor A ss_id=${ss_id}`);
+        if (typeof ss_id === "string" && ss_id.replace(/^\s+$/, '').length > 0) {
             this.ss = SpreadsheetApp.openById(ss_id); //IDから取得
             if (typeof (this.ss) === "string") {
                 xstr = "null";
@@ -507,17 +553,24 @@ class SpreadSheetx {
         }
     }
     getSheet(sheet_name) {
+        Logger.log(`SpreadSheetx getSheet 1 sheet_name=${sheet_name}`);
         let s_sheet = this.s_sheet_assoc[sheet_name];
         let xstr = "";
         if (s_sheet === undefined) {
-            if (this.ss != null) {
+            Logger.log(`SpreadSheetx getSheet 2 sheet_name=${sheet_name}`);
+            if (this.ss !== null) {
+                Logger.log(`SpreadSheetx getSheet 0 1 this.ss=${this.ss}|sheet_name=${sheet_name}`);
                 const sheet = this.ss.getSheetByName(sheet_name);
+                Logger.log(`SpreadSheetx getSheet 0 2 sheet=${sheet}`);
+                if (sheet === null) {
+                    throw new Error("sheet is null");
+                }
+                Logger.log(`SpreadSheetx getSheet 0 3 sheet=${sheet}|sheet_name=${sheet_name}`);
                 s_sheet = new _ssheet__WEBPACK_IMPORTED_MODULE_0__.SSheet(sheet, sheet_name);
-                _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`SpreadSheetx getSheet 0 sheet_name=${sheet_name}`);
                 xstr = this.ss_id == null ? "" : this.ss_id;
-                _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`SpreadSheetx getSheet 0 this.ss_id=${xstr}`);
+                _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`SpreadSheetx getSheet 0 4 this.ss_id=${xstr}`);
                 xstr = this.ss_url == null ? "" : this.ss_url;
-                _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`SpreadSheetx getSheet 0 this.ss_url=${xstr}`);
+                _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`SpreadSheetx getSheet 0 5 this.ss_url=${xstr}`);
                 this.s_sheet_assoc[sheet_name] = s_sheet;
             }
             else {
@@ -554,22 +607,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./server/src/util.ts");
 
 class SSheet {
-    sheet;
-    sheet_name;
-    dataRange;
     constructor(sheet, sheet_name) {
         let xstr = "";
         this.sheet_name = sheet_name;
         this.sheet = sheet;
         this.dataRange = null;
-        if (this.sheet != null) {
+        if (this.sheet !== null) {
             this.dataRange = this.sheet.getDataRange();
             xstr = this.dataRange == null ? "" : "valid";
-            _util__WEBPACK_IMPORTED_MODULE_0__.Util.log(`SSheet 1-1 constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`);
+            _util__WEBPACK_IMPORTED_MODULE_0__.Util.log(`SSheet 1-1 T constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`);
         }
         else {
             xstr = this.dataRange == null ? "" : "valid";
-            _util__WEBPACK_IMPORTED_MODULE_0__.Util.log(`SSheet 1-2 constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`);
+            _util__WEBPACK_IMPORTED_MODULE_0__.Util.log(`SSheet 1-2 F constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`);
         }
     }
     //   this.dataRange = { "x":15, "y": 1, "height": 100, "width":9 };
@@ -626,16 +676,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Util: () => (/* binding */ Util)
 /* harmony export */ });
 class Util {
-    static UPPER_BLANK_LINE_RANGE = 1;
-    static NOT_BLANK_LINE_RANGE = 2;
-    static BOTTOM_BLANK_LINE_RANGE = 3;
-    static BLANK_LINE = 10;
-    static NOT_BLANK_LINE = 11;
     static log_init() {
     }
     static log(message) {
+        Logger.log(message);
         return message;
-        // Logger.log(message)
     }
     static print_line(lines) {
         let xstr = "";
@@ -779,7 +824,21 @@ class Util {
             return "";
         }
     }
+    static is_valid_string(str) {
+        if (str === null) {
+            return false;
+        }
+        if (str.replace(/^\s*$/, '').length == 0) {
+            return false;
+        }
+        return true;
+    }
 }
+Util.UPPER_BLANK_LINE_RANGE = 1;
+Util.NOT_BLANK_LINE_RANGE = 2;
+Util.BOTTOM_BLANK_LINE_RANGE = 3;
+Util.BLANK_LINE = 10;
+Util.NOT_BLANK_LINE = 11;
 
 
 /***/ }),
@@ -796,17 +855,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _inquiry__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./inquiry */ "./server/src/inquiry.ts");
 /* harmony import */ var _listx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./listx */ "./server/src/listx.ts");
-/* harmony import */ var _appenv__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./appenv */ "./server/src/appenv.ts");
-
 
 
 class Webapp {
-    appenv;
-    constructor() {
-        this.appenv = new _appenv__WEBPACK_IMPORTED_MODULE_2__.Appenv();
-    }
     listx_test() {
-        _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main(this.appenv);
+        return _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main();
     }
     do0(e) {
         //値の受け取り
@@ -814,11 +867,11 @@ class Webapp {
         const cmd = e.parameter.cmd ? e.parameter.cmd : "";
         switch (cmd) {
             case "inquiry":
-                const inquiry = new _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry(e, this.appenv);
+                const inquiry = new _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry(e);
                 content = inquiry.register();
                 break;
             case "listx":
-                content = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main(this.appenv);
+                content = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main();
                 break;
             default:
                 content = ContentService.createTextOutput(`cmd=default cmd=${cmd}`);
