@@ -1,7 +1,6 @@
 import { SpreadSheetx } from "./spreadsheetx";
 import { SSheet } from "./ssheet"
 import { Util } from "./util";
-// import { Item } from "./item";
 import { Itemx } from "./itemx";
 import { SearchItem } from "./searchitem";
 import { Itemvalue } from "./itemvalue";
@@ -10,33 +9,41 @@ type StringOrNull = string | null;
 
 
 export class Infox {
-    CONST_SS_ID: string
+    ss_id: string
     sheet_name: string
-    ssxx: SpreadSheetx
-    ssheet: SSheet
+    ssxx: SpreadSheetx | null
+    ssheet: SSheet | null
     values: string[][]
     constructor(ss_id:string, sheet_name: string) {
-        // this.CONST_SS_ID = "1KtGdnnpj8k_bkxfYITalK193nRlVXiN0o_YiASO5KNs";
-        this.CONST_SS_ID = ss_id;
+        if( ! Util.is_valid_string(ss_id)) {
+            throw new Error("Infox ss_id is invalide");
+        }
+        if( ! Util.is_valid_string(sheet_name)) {
+            throw new Error("Infox sheet_name is invalide");
+        }
+        this.ss_id = ss_id;
         this.sheet_name = sheet_name;
-        this.ssxx = new SpreadSheetx(this.CONST_SS_ID);
-        this.ssheet = this.ssxx.getSheet(this.sheet_name);
-        this.ssheet.fetchAndSetDataRange();
-        this.values = this.ssheet.getValues();
+        this.ssheet = null;
+        this.values = [[""]];
+        if( ! Util.is_valid_string(this.ss_id) || ! Util.is_valid_string(this.sheet_name)){
+            throw new Error("Infox this.ss_id is invalide");
+        }
+        this.getValues()
     }
     getValues(): string[][] {
-        // Util.log(`Infox getValues() 1`)
-        if (this.values.length > 0) {
-            // Util.log(`Infox getValues() 2`)
-            if (this.values[0].length == 0) {
-                // Util.log(`Infox getValues() 3`)
-                // this.values = this.ssheet.getValues() as string[][];
-                this.values = this.ssheet.getValues(); // as string[][];
+        if (this.ssxx === null){
+            this.ssxx = new SpreadSheetx(this.ss_id);
+        }
+        if( this.ssxx !== null){
+            this.ssheet = this.ssxx.getSheet(this.sheet_name);
+            if (this.ssheet !== null){
+                this.ssheet.fetchAndSetDataRange();
+                this.values = this.ssheet.getValues();
             }
         }
-        return this.values;
+        return this.values
     }
-    getSSId(infoparam: InfoParam): string {
+     getSSId(infoparam: InfoParam): string {
         const values = this.getValues();
         const year: StringOrNull = infoparam.year;
         const kind: StringOrNull = infoparam.kind;
@@ -45,8 +52,6 @@ export class Infox {
             year,
             kind,
             kind2);
-        // Util.log(`Infox getSSId item=${item}`)
-        // const [ss_id, sheet_name] = this.get_id_from_values(values, item);
         return this.get_id_from_values(values, item);
     }
     make_item(year_str: StringOrNull = null,
@@ -85,7 +90,7 @@ export class Infox {
         const value_item = item.value;
 
         // Util.log(`Infox get_id_from_values result_start=${result_start}`);
-        Util.log(`Infox get_id_from_values =1-X d d.length=${d.length}`);
+        // Util.log(`Infox get_id_from_values =1-X d d.length=${d.length}`);
         d.map(it => {
             it.map(x => {
                 Util.log(`${x}, `)
@@ -98,23 +103,23 @@ export class Infox {
         for (let i = 0; i < count; i++) {
             const item = search_items[i];
             xstr = item.name == null ? "null" : "not null";
-            Util.log(`Infox get_id_from_values =4-X i=${i} item.value=${xstr} result_start.length=${result_start.length}`);
+            // Util.log(`Infox get_id_from_values =4-X i=${i} item.value=${xstr} result_start.length=${result_start.length}`);
             result_end = result_start.filter((v) => {
                 return v[item.index] == item.name
             })
             result_start = result_end;
-            Util.log("Infox get_id_from_values =S");
+            // Util.log("Infox get_id_from_values =S");
             // Util.log(result_start);
-            Util.log("Infox get_id_from_values =E");
+            // Util.log("Infox get_id_from_values =E");
         }
-        Util.log("Infox get_id_from_values =A1");
+        // Util.log("Infox get_id_from_values =A1");
         if (result_start.length > 0) {
-            Util.log("Infox get_id_from_values =A2");
+            // Util.log("Infox get_id_from_values =A2");
             ret_str = result_start[0][value_item.index];
             // Util.log(`Infox get_id_from_values 1 ret_str=${ret_str}`);
         }
         xstr = ret_str == null ? "(null)" : ret_str;
-        Util.log(`Infox get_id_from_values =A3 xstr=${xstr} value_item.index=${value_item.index}`);
+        // Util.log(`Infox get_id_from_values =A3 xstr=${xstr} value_item.index=${value_item.index}`);
         // Util.log(`Infox get_id_from_values ret=${ret} result_start.length=${result_start.length}`);
         return ret_str;
     }

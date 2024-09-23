@@ -10,8 +10,8 @@ export class Util {
 
   }
   static log(message: string): string {
-      return message;
-      // Logger.log(message)
+    Logger.log(message)
+    return message;
   }
   static print_line(lines: StringOrNull[][]): void {
       let xstr: string = "";
@@ -131,8 +131,6 @@ export class Util {
 
 
   static getAsJSON(values: string[][]): string {
-      // Util.log(`Util.getAsJSON 1 values.length=${values.length} $values[0]=${values[0]}`)
-      // const xarray: string[][] = [[]];
       const init_value: StringStringAssoc = {"":""};
       const xarray: StringSSA = {"":init_value};
       //先頭行にラベルがあるものとして、それ以降の行に各カラムにラベルをキーとして、カラムの値を値とする連想配列を作成
@@ -141,13 +139,10 @@ export class Util {
       let index = 0;
       let index_str = "";
       for (let i = 1; i < values.length; i++) {
-          // Util.log(`Util.getAsJSON 2 i=${i}`)
-
           index = i -1;
           index_str = index.toString();
           xarray[index_str] = {};
           for (let j = 0; j < values[0].length; j++) {
-              // Util.log(`Util.getAsJSON j=${j}`)
               first_i = i - 1;
               second_i_str = values[0][j];
               xarray[first_i][second_i_str] = values[i][j];
@@ -164,5 +159,30 @@ export class Util {
       else {
           return "";
       }
+  }
+
+  static is_valid_string(str: string | null): boolean {
+      if (str === null) {
+        return false;
+      }
+      if (str.replace(/^\s*$/, '').length == 0) {
+        return false;
+      }
+      return true;
+  }
+
+  static make_assoc_array_array(array: string[][]): [Record<string,string>] {
+      let result: [Record<string,string>] = [{}];
+      if (array.length > 0) {
+          const keys = array[0];
+          array.slice(1).forEach((values, index) => {
+              let obj: Record<string,string> = {};
+              keys.forEach((key, i) => {
+                  obj[key] = values[i];
+              });
+              result.push(obj);
+          });
+      }
+      return result;
   }
 }

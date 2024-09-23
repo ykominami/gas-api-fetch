@@ -9,14 +9,14 @@ export class SSheet {
         this.sheet_name = sheet_name;
         this.sheet = sheet;
         this.dataRange = null;
-        if (this.sheet != null) {
+        if (this.sheet !== null) {
             this.dataRange = this.sheet.getDataRange();
             xstr = this.dataRange == null ? "" : "valid";
-            Util.log(`SSheet 1-1 constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`)
+            Util.log(`SSheet 1-1 T constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`)
         }
         else {
             xstr = this.dataRange == null ? "" : "valid";
-            Util.log(`SSheet 1-2 constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`)
+            Util.log(`SSheet 1-2 F constructor this.sheet_name=${this.sheet_name} this.dataRange=${xstr}`)
         }
     }
     //   this.dataRange = { "x":15, "y": 1, "height": 100, "width":9 };
