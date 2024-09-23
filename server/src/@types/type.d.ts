@@ -7,6 +7,9 @@ interface AssocArray {
   [index: string]: AssocValue;
 }
 type StringOrNull = string | null;
+type StringOrNumberOrNull = string | number | null;
+type QueryKeyType = "index"|"subcmd"|"test"
+type QueryAssocType = Record<QueryKeyType, StringOrNumberOrNull>;
 
 type ThreeItemsOrNull = [number, number, number] | [null, null, null];
 
@@ -23,4 +26,5 @@ interface InfoParam {
 interface StartPointOfYearArray {
   [index: string]: number;
 }
-
+type ListxOrNull = Listx | null;
+type ResultX = { error_message:string, listx:ListxOrNull }

@@ -3,8 +3,11 @@ import { Listx } from './listx';
 
 export class Webapp {
 
-  listx_test(): GASHtmlTextOutputType {
-    return Listx.listx_main()
+  listx_test(): void {
+    Listx.listx_test()
+  }
+  listx_test_2(): void {
+    Listx.listx_test_2()
   }
   do0(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): GASHtmlTextOutputType {
     //値の受け取り
@@ -16,7 +19,8 @@ export class Webapp {
         content = inquiry.register();
         break;
       case "listx":
-        content = Listx.listx_main()
+        const assoc = Listx.query_parse(e)
+        content = Listx.listx_main(assoc)
        break;
       default:
         content = ContentService.createTextOutput(`cmd=default cmd=${cmd}`)

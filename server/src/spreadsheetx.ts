@@ -22,7 +22,7 @@ export class SpreadSheetx {
       else {
         xstr = "valid";
       }
-      
+
       if (typeof (this.ss_id) === "string") {
         xstr2 = this.ss_id;
       }
@@ -56,20 +56,23 @@ export class SpreadSheetx {
       Util.log(`##################### SpreadSheetx constructor openByUrl F this.ss_url=null ss=${xstr}`)
     }
   }
-  getSheet(sheet_name: string): SSheet {
-    Logger.log(`SpreadSheetx getSheet 1 sheet_name=${sheet_name}`);
+  getSheet(sheet_name: string): SSheet | null {
+    Util.log(`SpreadSheetx getSheet 1 sheet_name=${sheet_name}`);
+    if( ! Util.is_valid_string(sheet_name) ){
+      return null
+    }
+
     let s_sheet = this.s_sheet_assoc[sheet_name]
     let xstr = "";
-    if (s_sheet === undefined) {
-      Logger.log(`SpreadSheetx getSheet 2 sheet_name=${sheet_name}`);
+    if (s_sheet === null || s_sheet === undefined) {
+      Util.log(`SpreadSheetx getSheet 2 sheet_name=${sheet_name}`);
       if (this.ss !== null) {
-        Logger.log(`SpreadSheetx getSheet 0 1 this.ss=${this.ss}|sheet_name=${sheet_name}`);
+        Util.log(`SpreadSheetx getSheet 0 1 this.ss=${this.ss}|sheet_name=${sheet_name}`);
         const sheet = this.ss.getSheetByName(sheet_name);
-        Logger.log(`SpreadSheetx getSheet 0 2 sheet=${sheet}`);
+        Util.log(`SpreadSheetx getSheet 0 2 sheet=${sheet}`);
         if( sheet === null ){
           throw new Error("sheet is null");
         }
-        Logger.log(`SpreadSheetx getSheet 0 3 sheet=${sheet}|sheet_name=${sheet_name}`);
         s_sheet = new SSheet(sheet, sheet_name);
         xstr = this.ss_id == null ? "" : this.ss_id;
         Util.log(`SpreadSheetx getSheet 0 4 this.ss_id=${xstr}`);
