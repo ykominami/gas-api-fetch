@@ -8,16 +8,12 @@ import { Appenv } from "./appenv";
 export class Listx {
     infox: Infox
     param: InfoParam | null
-    ss_id: string
-    sheet_name: string
-    ss: SpreadSheetx | null
-    s_sheet: SSheet | null
     values: string[][]
     error: { history: string[] }
 
     static valid_ss_id_and_sheet_name(ss_id:string, sheet_name:string):string {
         if( ! Util.is_valid_string(ss_id)) {
-            return "listx_sub ss_id is null";
+            return "listx_sub ss_id is null"
         }
         if ( ! Util.is_valid_string(sheet_name) ){
             return "sheet_name is null"
@@ -25,45 +21,85 @@ export class Listx {
         return ""
     }
 
-    static listx_sub(ss_id: string, sheet_name: string): { error_message:string, listx:Listx | null } {
-        const infox = new Infox(ss_id, sheet_name)
-
-        if( infox === null){
-            return {error_message:"infox is null", listx:null}
-        }
-        const listx = new Listx(infox);
-        if (listx === null){
-            return {error_message:"listx is null", listx:null}
-        }
-        return {error_message:"", listx: listx}
+    static make_resultx(error_message:string, listx: ListxOrNull = null): ResultX {
+        return {error_message:error_message, listx:listx }
     }
 
-    static listx_ss(ss_id: string, sheet_name: string): string {
+    static get_from_array_with_index(array: string[][], num:number): string {
         let text: string = ""
-        let str = Listx.valid_ss_id_and_sheet_name(ss_id, sheet_name)
+        const assoc_array_array = Util.make_assoc_array_array(array)
+        const project_id = assoc_array_array[num]["project_id"]
+        const sheet_name = assoc_array_array[num]["sheet_1"]
+        Util.log( JSON.stringify(assoc_array_array))
+        Util.log(`get_listx_from_array ss_id=${project_id} sheet_name=${sheet_name}`)
+        let str = Listx.valid_ss_id_and_sheet_name(project_id, sheet_name)
         if( str === ""){
-            const obj = Listx.listx_sub(ss_id, sheet_name)
+            const obj = Listx.listx_sub(project_id, sheet_name)
             if( obj.error_message === ""){
-                const listx = obj.listx
-                if( listx !== null){
-                    const array2 = listx.getValues()
-                    text = JSON.stringify(array2);
-                    Util.log(text)
+                if( obj.listx !== null){
+                    const array = obj.listx.getValues()
+                    text = JSON.stringify(array)
                 }
+            }
+            else{
+                text = obj.error_message
             }
         }
         return text
     }
-    static listx_func(array: string[][], num:number): string {
-        const assoc_array_array = Util.make_assoc_array_array(array)
-        const ss_id = assoc_array_arrayy[num]["ss_id"]
-        const sheet_name = assoc_array_arrayy[num]["sheet"]
-        Util.log(`listx_func ss_id=${ss_id} sheet_name=${sheet_name}`)
 
-        return Listx.listx_ss(ss_id, sheet_name)
+    static listx_sub(ss_id: string, sheet_name: string): ResultX {
+        const infox = new Infox(ss_id, sheet_name)
+
+        if( infox === null){
+            return Listx.make_resultx("infox is null")
+        }
+        const listx = new Listx(infox);
+        if (listx === null){
+            return Listx.make_resultx("listx is null")
+        }
+        return Listx.make_resultx("", listx)
     }
-    static listx_main():GASHtmlTextOutputType {
+    static listx_test():void {
+        let assoc: QueryAssocType = {"index":-1, "subcmd":"", "test": -1}
+
+        Listx.listx_main(assoc)
+    }
+    static listx_test_2():void {
+        let assoc: QueryAssocType = {"index":-1, "subcmd":"all", "test": -10}
+
+        Listx.listx_main(assoc)
+    }
+    static test_func(array: string[][], num:number):string {
+        let text:string = ""
+        Util.dump_array(array)
+        if (num == -1){
+            for( let i = 0; i < array.length; i++){
+                text = Listx.get_from_array_with_index(array, i)
+                Util.log(`${i}-text=${text}`)
+            }
+        }
+        else{
+            text = Listx.get_from_array_with_index(array, num)
+            Util.log(`${num}-text=${text}`)
+        }
+        return text
+    }
+    static query_parse(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): QueryAssocType {
+        const assoc:QueryAssocType = {"index":-1, "subcmd":"", "test": -1}
+        const index_str:string = e.parameter.index ? e.parameter.index : "";
+        const subcmd:string = e.parameter.subcmd ? e.parameter.subcmd : "";
+        if(index_str != ""){
+            assoc["index"] = Number(index_str)
+        }
+        assoc["subcmd"] = subcmd
+
+        return assoc
+    }
+    static listx_main(assoc:QueryAssocType):GASHtmlTextOutputType {
         // this.appenv = appenv
+        const subcmd = assoc["subcmd"]
+        const index = assoc["index"]
         const ss_id = Appenv.get_index_ss_id()
         const sheet_name = Appenv.get_index_sheet_name()
         Util.log(`listx_main ss_id=${ss_id} sheet_name=${sheet_name}`)
@@ -76,11 +112,19 @@ export class Listx {
                 const listx = obj.listx
                 if( listx !== null){
                     const array = listx.getValues()
-                    // Listx.listx_func(array, 1)
-                    array.forEach((item, index)=>{
-                        Util.log(`listx_main ${index} 0=${item[0]} 1=${item[1]}`)
-                    })
-                    text = "listx_main"
+                    if( typeof assoc["test"] === "number" && assoc["test"] >= -2 ){
+                        text = Listx.test_func(array, assoc["test"])
+                    }
+                    else if( assoc["subcmd"] === "all"){
+                        const num_list = array.splice(1).map((values:string[][], i:number) => {
+                            return values[0]
+                        } )
+                        text = JSON.stringify(num_list)
+                    }
+                    else if(typeof assoc["index"] === "number" && assoc["index"] >= 0){
+                        text = Listx.get_from_array_with_index(array, assoc["index"])
+                    }
+                    Util.log(`${index}-text=${text}`)
                 }
             }
             else{
@@ -90,45 +134,23 @@ export class Listx {
         else{
             text = str
         }
-        Util.log(`listx_main text=${text}`)
 
         return ContentService.createTextOutput("cmd=listx|" + text)
     }
     constructor(infox: Infox) {
         this.infox = infox
         this.param = null
-        this.ss_id = infox.ss_id
-        this.ss = null
-        this.s_sheet = null
-        this.sheet_name = infox.sheet_name
+        // this.ss_id = infox.ss_id
+        // this.ss = null
+        // this.s_sheet = null
+        // this.sheet_name = infox.sheet_name
         this.values = [[""]]
         this.error = { history: [""] }
     }
 
     getValues(): string[][] {
-        if( ! Util.is_valid_string(this.ss_id) ){
-            Util.log(`Listx getValues this.ss_id=${this.ss_id}|`)
-            throw new Error(`Listx getValues ss_id=${this.ss_id}`)
-        }
-        if( ! Util.is_valid_string(this.sheet_name) ){
-            Util.log(`Listx getValues this.sheet_name=${this.sheet_name}|`)
-            throw new Error(`Listx getValues this.sheet_name=${this.sheet_name}`);
-        }
-        this.ss = new SpreadSheetx(this.ss_id)
-        this.s_sheet = this.ss.getSheet(this.sheet_name)
-        if (this.s_sheet === null || typeof this.s_sheet === "undefined") {
-            this.error.history.push("Booklist-A-2 get_values this.s_sheet is null or undefined")
-            return [this.error.history]
-        }
-        this.s_sheet.fetchAndSetDataRange();
-        this.values = this.s_sheet.getValues(); //  as string[][]
-        if (this.values.length <= 1) {
-            this.error.history.push(`Booklist-A-4 get_values this.values.length=${this.values.length}`)
-            return [this.error.history]
-        }
-        else {
-            return this.values
-        }
+        this.values = this.infox.getValues()
+        return this.values
     }
     getAsJson(): string {
         const json = Util.getAsJSON(this.values);

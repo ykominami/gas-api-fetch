@@ -15,3 +15,7 @@ export function listx_test(): void {
     const webapp = new Webapp();
     webapp.listx_test();
 }
+export function listx_test_2(): void {
+    const webapp = new Webapp();
+    webapp.listx_test_2();
+}

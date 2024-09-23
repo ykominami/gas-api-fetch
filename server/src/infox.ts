@@ -23,6 +23,7 @@ export class Infox {
         }
         this.ss_id = ss_id;
         this.sheet_name = sheet_name;
+        this.ssxx = null;
         this.ssheet = null;
         this.values = [[""]];
         if( ! Util.is_valid_string(this.ss_id) || ! Util.is_valid_string(this.sheet_name)){
