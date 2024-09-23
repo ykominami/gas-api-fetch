@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && cpx \"./server/src/**/*.html\" ./server/dist && cpx \"./server/src/**/*.json\" ./server/dist",
     "build:watch": "webpack --watch",
     "push": "clasp push",
     "push:watch": "clasp push --watch",
-    "deploy": "webpack && clasp push"
+    "deploy": "webpack && cpx \"./server/src/**/*.html\" ./server/dist && cpx \"./server/src/**/*.json\" ./server/dist && clasp push"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

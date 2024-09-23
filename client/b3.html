@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>The HTML5 Herald</title>
+    <meta name="description" content="The HTML5 Herald" />
+    <meta name="author" content="SitePoint" />
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <form
+     action=""
+     method="post"
+    >
+    <div class="hidden">このテキストは非表示になります。</div>
+    <fieldset>
+        <label for="name" id="name_error" class="hidden" >名前ERROR</label>
+        <label for="name" >名前x</label>
+        <input type="text" id="name" 　placeholder="山田太郎" autocomplete="off" /><br />
+        <label for="email" id="email_error" class="hidden" >email ERROR</label>
+        <label for="email" >email</label>
+        <input
+          type="text"
+          id="email"
+          　placeholder="test@test.com"
+          autocomplete="off"
+        /><br />
+      </fieldset>
+      <fieldset>
+        <label for="inquiry" id="inquiry_error" class="hidden" >inquiry ERROR</label>
+        <label for="inquiry" >お問い合わせ内容</label>
+        <input
+          type="textarea"
+          id="inquiry"
+          　placeholder="testです。"
+          autocomplete="off"
+        /><br />
+      </fieldset>
+      <input type="submit" value="Submit" id="submit_btn" />
+      <input type="button" value="btn" id="btn" />
+    </form>
+    <script src="js/client.js"></script>
+
+  </body>
+</html>
