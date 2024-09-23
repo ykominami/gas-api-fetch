@@ -2,18 +2,18 @@ const path = require("path");
 const GasPlugin = require("gas-webpack-plugin");
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './server/src/index.ts',
   mode: "development",
   devtool: false,
 
   output: {
-    path: path.join(__dirname, "dist"),
+    path: path.join(__dirname, "server", "dist"),
     filename: 'bundle.js',
   },
 
   resolve: {
     modules: [
-      path.resolve('./src'),
+      path.resolve('./server/src'),
       "node_modules",
     ],
     extensions: [".ts", ".js"],
