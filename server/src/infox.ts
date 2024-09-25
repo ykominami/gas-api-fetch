@@ -31,16 +31,27 @@ export class Infox {
         }
         this.getValues()
     }
-    getValues(): string[][] {
+    setup(): void {
         if (this.ssxx === null){
             this.ssxx = new SpreadSheetx(this.ss_id);
         }
         if( this.ssxx !== null){
             this.ssheet = this.ssxx.getSheet(this.sheet_name);
-            if (this.ssheet !== null){
-                this.ssheet.fetchAndSetDataRange();
-                this.values = this.ssheet.getValues();
-            }
+        }
+    }
+    appendRow(data_array: any[]): void {
+        // [this.name, this.email, this.inquiry, "受付", new Date(), new Date()]);
+        this.setup();
+        if( this.ssheet !== null){
+            this.ssheet.appendRow(data_array)
+        }
+    }
+
+    getValues(): string[][] {
+        this.setup();
+        if (this.ssheet !== null){
+            this.ssheet.fetchAndSetDataRange();
+            this.values = this.ssheet.getValues();
         }
         return this.values
     }

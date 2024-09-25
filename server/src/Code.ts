@@ -19,3 +19,12 @@ export function listx_test_2(): void {
     const webapp = new Webapp();
     webapp.listx_test_2();
 }
+
+export function inquiry_test(): void {
+    const webapp = new Webapp();
+    webapp.inquiry_test();
+}
+export function inquiry_test_2(): void {
+    const webapp = new Webapp();
+    webapp.inquiry_test_2();
+}

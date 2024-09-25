@@ -61,12 +61,12 @@ export class Listx {
         return Listx.make_resultx("", listx)
     }
     static listx_test():void {
-        let assoc: QueryAssocType = {"index":-1, "subcmd":"", "test": -1}
+        let assoc: ListxQueryAssocType = {"index":-1, "subcmd":"", "test": -1}
 
         Listx.listx_main(assoc)
     }
     static listx_test_2():void {
-        let assoc: QueryAssocType = {"index":-1, "subcmd":"all", "test": -10}
+        let assoc: ListxQueryAssocType = {"index":-1, "subcmd":"all", "test": -10}
 
         Listx.listx_main(assoc)
     }
@@ -85,8 +85,8 @@ export class Listx {
         }
         return text
     }
-    static query_parse(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): QueryAssocType {
-        const assoc:QueryAssocType = {"index":-1, "subcmd":"", "test": -1}
+    static query_parse(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent): ListxQueryAssocType {
+        const assoc:ListxQueryAssocType = {"index":-1, "subcmd":"", "test": -1}
         const index_str:string = e.parameter.index ? e.parameter.index : "";
         const subcmd:string = e.parameter.subcmd ? e.parameter.subcmd : "";
         if(index_str != ""){
@@ -96,10 +96,14 @@ export class Listx {
 
         return assoc
     }
-    static listx_main(assoc:QueryAssocType):GASHtmlTextOutputType {
+    static listx_main(assoc:ListxQueryAssocType):GASHtmlTextOutputType {
         // this.appenv = appenv
-        const subcmd = assoc["subcmd"]
-        const index = assoc["index"]
+        if( typeof assoc["subcmd"] === "string"){
+            const subcmd = assoc["subcmd"]
+        }
+        if( typeof assoc["index"] === "number" && assoc["index"] >= 0){
+            const index = assoc["index"]
+        }
         const ss_id = Appenv.get_index_ss_id()
         const sheet_name = Appenv.get_index_sheet_name()
         Util.log(`listx_main ss_id=${ss_id} sheet_name=${sheet_name}`)
@@ -124,7 +128,7 @@ export class Listx {
                     else if(typeof assoc["index"] === "number" && assoc["index"] >= 0){
                         text = Listx.get_from_array_with_index(array, assoc["index"])
                     }
-                    Util.log(`${index}-text=${text}`)
+                    Util.log(`${ assoc["index"] }-text=${text}`)
                 }
             }
             else{
@@ -135,15 +139,11 @@ export class Listx {
             text = str
         }
 
-        return ContentService.createTextOutput("cmd=listx|" + text)
+        return ContentService.createTextOutput(text)
     }
     constructor(infox: Infox) {
         this.infox = infox
         this.param = null
-        // this.ss_id = infox.ss_id
-        // this.ss = null
-        // this.s_sheet = null
-        // this.sheet_name = infox.sheet_name
         this.values = [[""]]
         this.error = { history: [""] }
     }
