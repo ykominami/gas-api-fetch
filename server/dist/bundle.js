@@ -6,6 +6,10 @@ function listx_test() {
 }
 function listx_test_2() {
 }
+function inquiry_test() {
+}
+function inquiry_test_2() {
+}
 function doGet() {
 }
 function doPost() {
@@ -13,6 +17,10 @@ function doPost() {
 function listx_test() {
 }
 function listx_test_2() {
+}
+function inquiry_test() {
+}
+function inquiry_test_2() {
 }/******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -27,6 +35,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   doGet: () => (/* binding */ doGet),
 /* harmony export */   doPost: () => (/* binding */ doPost),
+/* harmony export */   inquiry_test: () => (/* binding */ inquiry_test),
+/* harmony export */   inquiry_test_2: () => (/* binding */ inquiry_test_2),
 /* harmony export */   listx_test: () => (/* binding */ listx_test),
 /* harmony export */   listx_test_2: () => (/* binding */ listx_test_2)
 /* harmony export */ });
@@ -50,10 +60,20 @@ function listx_test_2() {
     const webapp = new _webapp__WEBPACK_IMPORTED_MODULE_0__.Webapp();
     webapp.listx_test_2();
 }
+function inquiry_test() {
+    const webapp = new _webapp__WEBPACK_IMPORTED_MODULE_0__.Webapp();
+    webapp.inquiry_test();
+}
+function inquiry_test_2() {
+    const webapp = new _webapp__WEBPACK_IMPORTED_MODULE_0__.Webapp();
+    webapp.inquiry_test_2();
+}
 __webpack_require__.g.doGet = __webpack_exports__.doGet;
 __webpack_require__.g.doPost = __webpack_exports__.doPost;
 __webpack_require__.g.listx_test = __webpack_exports__.listx_test;
 __webpack_require__.g.listx_test_2 = __webpack_exports__.listx_test_2;
+__webpack_require__.g.inquiry_test = __webpack_exports__.inquiry_test;
+__webpack_require__.g.inquiry_test_2 = __webpack_exports__.inquiry_test_2;
 
 /***/ }),
 
@@ -131,16 +151,26 @@ class Infox {
         }
         this.getValues();
     }
-    getValues() {
+    setup() {
         if (this.ssxx === null) {
             this.ssxx = new _spreadsheetx__WEBPACK_IMPORTED_MODULE_0__.SpreadSheetx(this.ss_id);
         }
         if (this.ssxx !== null) {
             this.ssheet = this.ssxx.getSheet(this.sheet_name);
-            if (this.ssheet !== null) {
-                this.ssheet.fetchAndSetDataRange();
-                this.values = this.ssheet.getValues();
-            }
+        }
+    }
+    appendRow(data_array) {
+        // [this.name, this.email, this.inquiry, "受付", new Date(), new Date()]);
+        this.setup();
+        if (this.ssheet !== null) {
+            this.ssheet.appendRow(data_array);
+        }
+    }
+    getValues() {
+        this.setup();
+        if (this.ssheet !== null) {
+            this.ssheet.fetchAndSetDataRange();
+            this.values = this.ssheet.getValues();
         }
         return this.values;
     }
@@ -231,18 +261,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Inquiry: () => (/* binding */ Inquiry)
 /* harmony export */ });
 /* harmony import */ var _appenv__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./appenv */ "./server/src/appenv.ts");
+/* harmony import */ var _infox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./infox */ "./server/src/infox.ts");
+
 
 class Inquiry {
-    constructor(e) {
-        this.name = e.parameter.name ? e.parameter.name : "";
-        this.email = e.parameter.email ? e.parameter.email : "";
-        this.inquiry = e.parameter.inquiry ? e.parameter.inquiry : "";
+    static query_parse(e) {
+        const assoc = { "name": "", "email": "", "inquiry": "", "test": -1 };
+        assoc["name"] = e.parameter.name ? e.parameter.name : "";
+        assoc["email"] = e.parameter.email ? e.parameter.email : "";
+        assoc["inquiry"] = e.parameter.inquiry ? e.parameter.inquiry : "";
+        return assoc;
+    }
+    static inquiry_main(assoc) {
+        const inquiry = new Inquiry(assoc);
+        return inquiry.register();
+    }
+    static inquiry_test() {
+        let assoc = { "name": "john", "email": "john@abc.com", "inquiry": "といあわせ", "test": -10 };
+        Inquiry.inquiry_main(assoc);
+    }
+    static inquiry_test_2() {
+        let assoc = { "name": "Adam", "email": "adam@def.com", "inquiry": "問合せ", "test": -10 };
+        Inquiry.inquiry_main(assoc);
+    }
+    constructor(assoc) {
+        this.name = "";
+        this.email = "";
+        this.inquiry = "";
+        if (typeof assoc["name"] === "string") {
+            this.name = assoc["name"];
+        }
+        if (typeof assoc["email"] === "string") {
+            this.email = assoc["email"];
+        }
+        if (typeof assoc["inquiry"] === "string") {
+            this.inquiry = assoc["inquiry"];
+        }
         //エラー制御
         this.email_exp = /^[a-z0-9.]+@[a-z0-9.]+\.[a-z]+$/;
         this.inquiry_exp = /^.{1,10}$/;
         this.ss_id = _appenv__WEBPACK_IMPORTED_MODULE_0__.Appenv.get_ss_id();
         this.sheet_name = _appenv__WEBPACK_IMPORTED_MODULE_0__.Appenv.get_sheet_name();
-        this.sheet = null;
+        this.infox = new _infox__WEBPACK_IMPORTED_MODULE_1__.Infox(this.ss_id, this.sheet_name);
     }
     validate() {
         if (this.name == "") {
@@ -266,19 +326,11 @@ class Inquiry {
         if (message != "") {
             return ContentService.createTextOutput(JSON.stringify({ "message": message }));
         }
-        // const ss = SpreadsheetApp.getActiveSpreadsheet();
-        const ss = SpreadsheetApp.openById(this.ss_id);
-        const sheet = ss.getSheetByName(this.sheet_name);
-        if (sheet != null) {
-            //シートの一番下の行に追加
-            sheet.appendRow([this.name, this.email, this.inquiry, "受付", new Date(), new Date()]);
-            //応答
-            // return ContentService.createTextOutput("受付けました。")
-            return ContentService.createTextOutput(JSON.stringify({ "message": "success!" }));
+        if (this.infox !== null) {
+            this.infox.appendRow([this.name, this.email, this.inquiry, "受付", new Date(), new Date()]);
         }
-        else {
-            return ContentService.createTextOutput(JSON.stringify({ "message": "" }));
-        }
+        //応答
+        return ContentService.createTextOutput(JSON.stringify({ "message": "success!" }));
     }
 }
 
@@ -389,17 +441,17 @@ class Listx {
         return Listx.make_resultx("", listx);
     }
     static listx_test() {
-        let assoc = { "index": -1, "subcmd": "", "test": 1 };
+        let assoc = { "index": -1, "subcmd": "", "test": -1 };
         Listx.listx_main(assoc);
     }
     static listx_test_2() {
-        let assoc = { "index": -1, "subcmd": "all", "test": -1 };
+        let assoc = { "index": -1, "subcmd": "all", "test": -10 };
         Listx.listx_main(assoc);
     }
     static test_func(array, num) {
         let text = "";
         _util__WEBPACK_IMPORTED_MODULE_1__.Util.dump_array(array);
-        if (num == 0) {
+        if (num == -1) {
             for (let i = 0; i < array.length; i++) {
                 text = Listx.get_from_array_with_index(array, i);
                 _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`${i}-text=${text}`);
@@ -423,8 +475,12 @@ class Listx {
     }
     static listx_main(assoc) {
         // this.appenv = appenv
-        const subcmd = assoc["subcmd"];
-        const index = assoc["index"];
+        if (typeof assoc["subcmd"] === "string") {
+            const subcmd = assoc["subcmd"];
+        }
+        if (typeof assoc["index"] === "number" && assoc["index"] >= 0) {
+            const index = assoc["index"];
+        }
         const ss_id = _appenv__WEBPACK_IMPORTED_MODULE_2__.Appenv.get_index_ss_id();
         const sheet_name = _appenv__WEBPACK_IMPORTED_MODULE_2__.Appenv.get_index_sheet_name();
         _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`listx_main ss_id=${ss_id} sheet_name=${sheet_name}`);
@@ -436,7 +492,7 @@ class Listx {
                 const listx = obj.listx;
                 if (listx !== null) {
                     const array = listx.getValues();
-                    if (typeof assoc["test"] === "number" && assoc["test"] > 0) {
+                    if (typeof assoc["test"] === "number" && assoc["test"] >= -2) {
                         text = Listx.test_func(array, assoc["test"]);
                     }
                     else if (assoc["subcmd"] === "all") {
@@ -448,7 +504,7 @@ class Listx {
                     else if (typeof assoc["index"] === "number" && assoc["index"] >= 0) {
                         text = Listx.get_from_array_with_index(array, assoc["index"]);
                     }
-                    _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`${index}-text=${text}`);
+                    _util__WEBPACK_IMPORTED_MODULE_1__.Util.log(`${assoc["index"]}-text=${text}`);
                 }
             }
             else {
@@ -458,15 +514,11 @@ class Listx {
         else {
             text = str;
         }
-        return ContentService.createTextOutput("cmd=listx|" + text);
+        return ContentService.createTextOutput(text);
     }
     constructor(infox) {
         this.infox = infox;
         this.param = null;
-        // this.ss_id = infox.ss_id
-        // this.ss = null
-        // this.s_sheet = null
-        // this.sheet_name = infox.sheet_name
         this.values = [[""]];
         this.error = { history: [""] };
     }
@@ -684,6 +736,11 @@ class SSheet {
             xvalues = [["dataRange=null"]];
         }
         return xvalues;
+    }
+    appendRow(data_array) {
+        if (this.sheet !== null) {
+            this.sheet.appendRow(data_array);
+        }
     }
 }
 
@@ -905,18 +962,24 @@ class Webapp {
     listx_test_2() {
         _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_test_2();
     }
+    inquiry_test() {
+        _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry.inquiry_test();
+    }
+    inquiry_test_2() {
+        _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry.inquiry_test_2();
+    }
     do0(e) {
         //値の受け取り
         let content;
         const cmd = e.parameter.cmd ? e.parameter.cmd : "";
         switch (cmd) {
             case "inquiry":
-                const inquiry = new _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry(e);
-                content = inquiry.register();
+                const inquiry_assoc = _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry.query_parse(e);
+                content = _inquiry__WEBPACK_IMPORTED_MODULE_0__.Inquiry.inquiry_main(inquiry_assoc);
                 break;
             case "listx":
-                const assoc = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.query_parse(e);
-                content = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main(assoc);
+                const listx_assoc = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.query_parse(e);
+                content = _listx__WEBPACK_IMPORTED_MODULE_1__.Listx.listx_main(listx_assoc);
                 break;
             default:
                 content = ContentService.createTextOutput(`cmd=default cmd=${cmd}`);
@@ -1013,6 +1076,8 @@ __webpack_require__.g.doGet = _Code__WEBPACK_IMPORTED_MODULE_0__.doGet;
 __webpack_require__.g.doPost = _Code__WEBPACK_IMPORTED_MODULE_0__.doPost;
 __webpack_require__.g.listx_test = _Code__WEBPACK_IMPORTED_MODULE_0__.listx_test;
 __webpack_require__.g.listx_test_2 = _Code__WEBPACK_IMPORTED_MODULE_0__.listx_test_2;
+__webpack_require__.g.inquiry_test = _Code__WEBPACK_IMPORTED_MODULE_0__.inquiry_test;
+__webpack_require__.g.inquiry_test_2 = _Code__WEBPACK_IMPORTED_MODULE_0__.inquiry_test_2;
 
 /******/ })()
 ;

@@ -56,4 +56,9 @@ export class SSheet {
         }
         return xvalues;
     }
+    appendRow( data_array: any[] ):void {
+        if (this.sheet !== null) {
+            this.sheet.appendRow(data_array);
+        }
+    }
 }

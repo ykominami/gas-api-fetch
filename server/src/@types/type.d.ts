@@ -8,14 +8,18 @@ interface AssocArray {
 }
 type StringOrNull = string | null;
 type StringOrNumberOrNull = string | number | null;
-type QueryKeyType = "index"|"subcmd"|"test"
-type QueryAssocType = Record<QueryKeyType, StringOrNumberOrNull>;
+type ListxQueryKeyType = "index"|"subcmd"|"test"
+type ListxQueryAssocType = Record<ListxQueryKeyType, StringOrNumberOrNull>;
+//
+type InquiryQueryKeyType = "name"|"email"|"inquiry"|"test"
+type InquiryQueryAssocType = Record<InquiryQueryKeyType, StringOrNumberOrNull>;
 
 type ThreeItemsOrNull = [number, number, number] | [null, null, null];
 
 type ThreeItemsAssocArr = [ThreeItemsOrNull];
 type ThreeItemsAssocArray = Record<number, ThreeItemsAssocArr>;
 
+type StringOrDate = string | Date;
 interface InfoParam {
   sheet_name: StringOrNull;
   kind: StringOrNull;
